@@ -1,0 +1,14 @@
+[Unit]
+Description=Run forever check service
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/pi/sterilizer
+ExecStart=/usr/bin/python3 /home/pi/sterilizer/app.py
+StandardOutput=syslog
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=runme.service
+

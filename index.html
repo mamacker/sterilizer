@@ -1,0 +1,38 @@
+<html>
+<head>
+<title>picamera MJPEG streaming demo</title>
+<style>
+div.button {
+    display:inline-block;
+    color:#444;
+    border:1px solid #CCC;
+    background:#DDD;
+    box-shadow: 0 0 5px -1px rgba(0,0,0,0.2);
+    cursor:pointer;
+    vertical-align:middle;
+    width: 150px;
+    padding: 5px;
+    text-align: center;
+}
+
+div.button:active {
+    color:green;
+    box-shadow: 0 0 5px -1px rgba(0,0,0,0.6);
+}
+</style>
+</head>
+<body>
+  <table>
+    <tr>
+      <td>
+        <div class="button" id="on">ON</div>
+      </td>
+      <td>
+        <div class="button" id="off">Off</div>
+      </td>
+    </tr>
+  </table>
+  <img src="stream.mjpg" width="640" height="480" />
+  <script src="/code.js"></script>
+</body>
+</html>

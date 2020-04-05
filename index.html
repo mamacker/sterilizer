@@ -40,6 +40,11 @@ div.status {
     text-align: center;
     font-size: 35px;
 }
+
+div.status_title {
+    font-size: 20px;
+    font-weight: bold;
+}
 </style>
 </head>
 <body>
@@ -56,14 +61,14 @@ div.status {
   <table>
     <tr>
       <td>
-        <img src="stream.mjpg" height="230px" />
+        <img src="stream.mjpg" height="250px" />
       </td>
       <td>
-        <h4>Safey</h4>
+        <div class="status_title">Safety</div>
         <div id="safety" class="status" style="font-size: 15px">
           Lid Open
         </div>
-        <h4>Status</h4>
+        <div class="status_title">Status</div>
         <div id="status" class="status">
           &#x1f4a1;
         </div>

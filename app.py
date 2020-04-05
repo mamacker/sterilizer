@@ -11,6 +11,8 @@ from threading import Condition
 from http import server
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
+import threading
+import time
 
 led = LED(17)
 button = Button(21, pull_up=True)
@@ -27,6 +29,22 @@ def is_safe():
         safety_state = "open"
         return False
 
+def turn_off():
+    global light_state
+    led.off()
+    light_state = False
+    return report_state()
+
+def monitor_state():
+    print("Monitoring...");
+    while(True):
+        if not is_safe():
+            turn_off()
+        time.sleep(.3);
+
+t0 = threading.Thread(target=monitor_state, args=());
+t0.start();
+
 def report_state():
     return json.dumps({'ison': light_state, 'safety_state': safety_state})
 
@@ -40,11 +58,6 @@ def turn_on():
         led.off()
     return report_state()
 
-def turn_off():
-    global light_state
-    led.off()
-    light_state = False
-    return report_state()
 
 class StreamingOutput(object):
     def __init__(self):

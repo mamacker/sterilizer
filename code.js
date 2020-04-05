@@ -28,9 +28,20 @@ document.getElementById("off").addEventListener("click", () => {
 
 function set_status(val) {
   if (val) {
-    document.getElementById("status").innerHTML = "&#x1f4a1;"
+    document.getElementById("status").innerHTML = "ON"
   } else {
     document.getElementById("status").innerHTML = "OFF"
+  }
+}
+
+function set_safety(val) {
+  switch(val) {
+    case "open":
+      document.getElementById("safety").innerHTML = "Lid Open"
+      break;
+    case "":
+      document.getElementById("safety").innerHTML = "Safe"
+      break;
   }
 }
 
@@ -40,6 +51,10 @@ setInterval(() => {
       set_status(current.ison);
     } else {
       set_status(false);
+    }
+
+    if (current && current.safety_state !== undefined) {
+      set_safety(current.safety_state);
     }
   });
 }, 500);

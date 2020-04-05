@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 
 led = LED(17)
-button = Button(2)
+button = Button(21, pull_up=True)
 
 def is_safe():
     if button.is_pressed:

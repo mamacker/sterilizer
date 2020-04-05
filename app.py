@@ -1,4 +1,3 @@
-from flask import Flask, render_template, Response
 import json
 from gpiozero import LED, Button
 import picamera
@@ -16,20 +15,36 @@ from urllib.parse import parse_qs
 led = LED(17)
 button = Button(21, pull_up=True)
 
+light_state = False
+safety_state = "open"
+
 def is_safe():
+    global safety_state
     if button.is_pressed:
+        safety_state = ""
         return True
     else:
+        safety_state = "open"
         return False
 
+def report_state():
+    return json.dumps({'ison': light_state, 'safety_state': safety_state})
+
 def turn_on():
+    global light_state
     if is_safe():
-        return json.dumps({'ison': True})
+        light_state = True
+        led.on()
     else:
-        return json.dumps({'ison': False})
+        light_state = False
+        led.off()
+    return report_state()
 
 def turn_off():
-    return json.dumps({'ison': False})
+    global light_state
+    led.off()
+    light_state = False
+    return report_state()
 
 class StreamingOutput(object):
     def __init__(self):
@@ -97,6 +112,11 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-Type', 'text/javascript')
             self.end_headers()
             self.wfile.write(turn_off().encode())
+        elif self.path == '/status':
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/javascript')
+            self.end_headers()
+            self.wfile.write(report_state().encode())
         elif self.path == '/stream.mjpg':
             self.send_response(200)
             self.send_header('Age', 0)

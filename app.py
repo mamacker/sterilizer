@@ -6,14 +6,14 @@ import picamera
 import socketserver
 import threading
 import time
-from gpiozero import uv_light, Button
+from gpiozero import LED, Button
 from http import server
 from os import curdir, sep
 from threading import Condition
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
-uv_light = uv_light(17)
+uv_light = LED(17)
 box_seal = Button(21, pull_up=True)
 
 light_state = False

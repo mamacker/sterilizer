@@ -48,24 +48,34 @@ def report_state():
     return json.dumps({'ison': light_state, 'safety_state': safety_state})
 
 on_thread = None
+killed_timer = False
 def timed_turn_off(duration):
-    try:
-        time_per_loop = .2
-        while(duration > 0):
-            time.sleep(time_per_loop)
-            duration = duration - time_per_loop
+    global on_thread
+    time_per_loop = .2
+    while duration > 0 and not killed_timer:
+        time.sleep(time_per_loop)
+        duration = duration - time_per_loop
+
+    if not killed_timer:
         turn_off()
-    except:
-        print("Canceluv_light timer.")
+    on_thread = None
+
+
+def kill_timer():
+    global killed_timer
+    killed_timer = True
+    time.sleep(.3)
+    killed_timer = False
 
 def turn_on(duration):
-    global light_state, on_thread
+    global light_state, on_thread, killed_timer
     if is_safe():
         light_state = True
         uv_light.on()
         if (on_thread != None):
-            on_thread.raise_exception()
-        on_thread = threading.Thread(target=timed_turn_off, args=(duration));
+            kill_timer()
+        killed_timer = False
+        on_thread = threading.Thread(target=timed_turn_off, args=(duration,));
         on_thread.start();
     else:
         light_state = False
@@ -132,7 +142,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             if 'duration' in query_components:
                 duration = query_components["duration"][0]
 
-            self.wfile.write(turn_on(duration).encode())
+            duration = int(duration) * 60 # Value is in minutes.
+            self.wfile.write(turn_on(int(duration)).encode())
         elif self.path == '/off':
             self.send_response(200)
             self.send_header('Content-Type', 'text/javascript')

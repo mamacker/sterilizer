@@ -1,28 +1,27 @@
-import json
-from gpiozero import LED, Button
-import picamera
 import cv2
 import io
-import picamera
+import json
 import logging
+import picamera
 import socketserver
-from os import curdir, sep
-from threading import Condition
-from http import server
-from urllib.parse import urlparse
-from urllib.parse import parse_qs
 import threading
 import time
+from gpiozero import uv_light, Button
+from http import server
+from os import curdir, sep
+from threading import Condition
+from urllib.parse import parse_qs
+from urllib.parse import urlparse
 
-led = LED(17)
-button = Button(21, pull_up=True)
+uv_light = uv_light(17)
+box_seal = Button(21, pull_up=True)
 
 light_state = False
 safety_state = "open"
 
 def is_safe():
     global safety_state
-    if button.is_pressed:
+    if box_seal.is_pressed:
         safety_state = ""
         return True
     else:
@@ -31,7 +30,7 @@ def is_safe():
 
 def turn_off():
     global light_state
-    led.off()
+    uv_light.off()
     light_state = False
     return report_state()
 
@@ -57,20 +56,20 @@ def timed_turn_off(duration):
             duration = duration - time_per_loop
         turn_off()
     except:
-        print("Cancelled timer.")
+        print("Canceluv_light timer.")
 
 def turn_on(duration):
     global light_state, on_thread
     if is_safe():
         light_state = True
-        led.on()
+        uv_light.on()
         if (on_thread != None):
             on_thread.raise_exception()
         on_thread = threading.Thread(target=timed_turn_off, args=(duration));
         on_thread.start();
     else:
         light_state = False
-        led.off()
+        uv_light.off()
     return report_state()
 
 class StreamingOutput(object):
